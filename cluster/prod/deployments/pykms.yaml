@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pykms
+spec:
+  selector:
+    matchLabels:
+      app: pykms
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pykms
+    spec:
+#     volumes:
+#       - name: nfs-cerfhost-pykms
+#         nfs:
+#           server: cerfhost.cerfnet.duckdns.org
+#           path: "/export/containers/pykms/"
+#       - name: gluster-pykms-config
+#         persistentVolumeClaim:
+#           claimName: gluster-pykms-claim
+#       - name: nfs-cerfhost-music
+#         nfs:
+#           server: cerfhost
+#           path: "/export/music/"
+      containers:
+      - name: pykms
+        image: pykmsorg/py-kms:python3
+#       imagePullPolicy: IfNotPresent
+        ports:
+#         - containerPort: 80
+          - containerPort: 1688
+#       volumeMounts:
+#         - name: nfs-cerfhost
+#         - name: gluster-pykms-config
+#           mountPath: "/config"
+#         - name: nfs-cerfhost-pykms
+#           mountPath: "/config"
+        env:
+        - name: PGID
+          value: "1001"
+        - name: PUID
+          value: "1001"
+        - name: SQLITE
+          value: "true"
