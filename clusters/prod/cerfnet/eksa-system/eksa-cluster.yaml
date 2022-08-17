@@ -110,7 +110,7 @@ metadata:
   namespace: default
 spec:
   datastore: /SDDC/datastore/local_ssd
-  diskGiB: 25
+  diskGiB: 30
   folder: /SDDC/vm//
   memoryMiB: 8192
   numCPUs: 2
