@@ -39,7 +39,7 @@ spec:
   managementCluster:
     name: cerfnet
   workerNodeGroupConfigurations:
-  - count: 3
+  - count: 2
     machineGroupRef:
       kind: VSphereMachineConfig
       name: prod
