@@ -1,0 +1,141 @@
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: Cluster
+metadata:
+  name: mgmt
+  namespace: default
+spec:
+  bundlesRef:
+    apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+    name: bundles-13
+    namespace: eksa-system
+  clusterNetwork:
+    cniConfig:
+      cilium:
+        policyEnforcementMode: never
+    pods:
+      cidrBlocks:
+      - 172.16.0.0/16
+    services:
+      cidrBlocks:
+      - 10.92.0.0/16
+  controlPlaneConfiguration:
+    count: 1
+    endpoint:
+      host: 192.168.100.20
+    machineGroupRef:
+      kind: VSphereMachineConfig
+      name: mgmt-cp
+  datacenterRef:
+    kind: VSphereDatacenterConfig
+    name: mgmt
+  externalEtcdConfiguration:
+    count: 1
+    machineGroupRef:
+      kind: VSphereMachineConfig
+      name: mgmt-etcd
+  gitOpsRef:
+    kind: FluxConfig
+    name: my-github-flux-provider
+  kubernetesVersion: "1.22"
+  managementCluster:
+    name: mgmt
+  workerNodeGroupConfigurations:
+  - count: 2
+    machineGroupRef:
+      kind: VSphereMachineConfig
+      name: mgmt
+    name: mgmt-worker-0
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereDatacenterConfig
+metadata:
+  name: mgmt
+  namespace: default
+spec:
+  datacenter: SDDC
+  insecure: true
+  network: /SDDC/network/VM Network
+  server: vcenter.cerfnet.duckdns.org
+  thumbprint: ""
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereMachineConfig
+metadata:
+  annotations:
+    anywhere.eks.amazonaws.com/control-plane: "true"
+  name: mgmt-cp
+  namespace: default
+spec:
+  datastore: /SDDC/datastore/local_hdd
+  diskGiB: 25
+  folder: /SDDC/vm//
+  memoryMiB: 4096
+  numCPUs: 2
+  osFamily: bottlerocket
+  resourcePool: /SDDC/host/192.168.100.10/Resources/mgmt
+  template: /SDDC/vm/Templates/bottlerocket-v1.22.10-kubernetes-1-22-eks-9-amd64-00b0110
+  users:
+  - name: ec2-user
+    sshAuthorizedKeys:
+    - ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAAreM2U2jA0DVYT8vO4xFGhsmE6DgjlChnD9ES3SPFIt4Y3+B07EXYNDCtR1RHDoCIpz8QwX9USDpX8rV649J3WegDwDCejDCTjwVt94INw2iSt9H5p19Fue+Osgn+fOGP336tTztBu3w3if8EWPUiD3sDCSVUm6vVNniUfGGkQoihEBw==
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereMachineConfig
+metadata:
+  annotations:
+    anywhere.eks.amazonaws.com/etcd: "true"
+  name: mgmt-etcd
+  namespace: default
+spec:
+  datastore: /SDDC/datastore/local_hdd
+  diskGiB: 25
+  folder: /SDDC/vm//
+  memoryMiB: 8192
+  numCPUs: 2
+  osFamily: bottlerocket
+  resourcePool: /SDDC/host/192.168.100.10/Resources/mgmt
+  template: /SDDC/vm/Templates/bottlerocket-v1.22.10-kubernetes-1-22-eks-9-amd64-00b0110
+  users:
+  - name: ec2-user
+    sshAuthorizedKeys:
+    - ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAAreM2U2jA0DVYT8vO4xFGhsmE6DgjlChnD9ES3SPFIt4Y3+B07EXYNDCtR1RHDoCIpz8QwX9USDpX8rV649J3WegDwDCejDCTjwVt94INw2iSt9H5p19Fue+Osgn+fOGP336tTztBu3w3if8EWPUiD3sDCSVUm6vVNniUfGGkQoihEBw==
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereMachineConfig
+metadata:
+  name: mgmt
+  namespace: default
+spec:
+  datastore: /SDDC/datastore/local_ssd
+  diskGiB: 25
+  folder: /SDDC/vm//
+  memoryMiB: 8192
+  numCPUs: 2
+  osFamily: bottlerocket
+  resourcePool: /SDDC/host/192.168.100.10/Resources/mgmt
+  template: /SDDC/vm/Templates/bottlerocket-v1.22.10-kubernetes-1-22-eks-9-amd64-00b0110
+  users:
+  - name: ec2-user
+    sshAuthorizedKeys:
+    - ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAAreM2U2jA0DVYT8vO4xFGhsmE6DgjlChnD9ES3SPFIt4Y3+B07EXYNDCtR1RHDoCIpz8QwX9USDpX8rV649J3WegDwDCejDCTjwVt94INw2iSt9H5p19Fue+Osgn+fOGP336tTztBu3w3if8EWPUiD3sDCSVUm6vVNniUfGGkQoihEBw==
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: FluxConfig
+metadata:
+  name: my-github-flux-provider
+  namespace: default
+spec:
+  branch: main
+  clusterConfigPath: clusters
+  github:
+    owner: cfredericksen
+    personal: true
+    repository: gitops-home
+  systemNamespace: flux-system
+
+---
