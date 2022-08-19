@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beets
+spec:
+  selector:
+    matchLabels:
+      app: beets
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: beets
+    spec:
+#     volumes:
+#       - name: beets-config
+#         persistentVolumeClaim:
+#           claimName: longhorn-beets-pvc
+#       - name: nfs-cerfhost-music
+#         nfs:
+#           server: cerfhost.cerfnet.duckdns.org
+#           path: "/export/music/"
+#       - name: nfs-cerfhost-new-music
+#         nfs:
+#           server: cerfhost.cerfnet.duckdns.org
+#           path: "/export/newmusic/"
+      containers:
+      - name: beets
+#       image: linuxserver/beets:amd64-1.4.9-ls94
+        image: linuxserver/beets:latest
+        ports:
+#         - containerPort: 80
+          - containerPort: 8337
+        volumeMounts:
+#         - name: nfs-cerfhost
+#         - name: beets-config
+#           mountPath: "/config"
+#         - name: nfs-cerfhost-music
+#           mountPath: "/music"
+#         - name: nfs-cerfhost-new-music
+#           mountPath: "/newmusic"
+        env:
+#       - name: PGID
+#         value: "1001"
+#       - name: PUID
+#         value: "1001"
