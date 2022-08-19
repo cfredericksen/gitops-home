@@ -68,7 +68,7 @@ metadata:
   name: mgmt-cp
   namespace: default
 spec:
-  datastore: /SDDC/datastore/local_ssd
+  datastore: /SDDC/datastore/local_hdd
   diskGiB: 25
   folder: /SDDC/vm//
   memoryMiB: 4096
